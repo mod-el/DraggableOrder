@@ -1,0 +1,15 @@
+{
+	"name": "DraggableOrder",
+	"description": "Javascript utility to enable drag&drop ordering between DOM elements",
+	"version": "0.1.0",
+	"dependencies": {
+		"FrontEnd": ">=1.1.0"
+	},
+	"css": [
+		"files/style.css"
+	],
+	"js": [
+		"files/js.js"
+	],
+	"assets-position": "foot"
+}
