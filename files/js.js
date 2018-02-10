@@ -75,10 +75,12 @@ window.addEventListener('mouseup', draggableRelease);
 function makeDraggablePlaceHolder(element) {
 	let placeholder = document.createElement('div');
 	placeholder.className = 'dragging-placeholder';
+	placeholder.style.opacity = 0;
 	placeholder.style.display = window.getComputedStyle(element).display;
 	placeholder.style.width = element.offsetWidth + 'px';
 	placeholder.style.height = element.offsetHeight + 'px';
 	placeholder = element.parentNode.insertBefore(placeholder, element);
+	setTimeout(() => { placeholder.style.opacity = 1; }, 100);
 	return placeholder;
 }
 
