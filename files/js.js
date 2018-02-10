@@ -132,9 +132,14 @@ function draggableRelease(event) {
 	if (event.button !== 0 || !draggableOrder)
 		return;
 
-	let elementId = draggableOrder.element.getAttribute('data-draggable-id');
-	let elementIndex = draggableOrder.index;
-	let targetIndex = parseInt(draggableOrder['target'].getAttribute('data-draggable-index'));
+	let element = {
+		'id': draggableOrder.element.getAttribute('data-draggable-id'),
+		'idx': draggableOrder.index
+	};
+	let target = {
+		'id': draggableOrder['target'].getAttribute('data-draggable-id'),
+		'idx': parseInt(draggableOrder['target'].getAttribute('data-draggable-index'))
+	};
 
 	draggableOrder.element.removeClass('dragging-order');
 	placeOrderingElement(draggableOrder.element, draggableOrder['target']);
@@ -142,7 +147,7 @@ function draggableRelease(event) {
 
 	if (draggableOrder.cont.getAttribute('data-draggable-callback')) {
 		eval('var callback = function(id, targetIdx, elementIdx){ ' + draggableOrder.cont.getAttribute('data-draggable-callback') + ' }');
-		callback.call(null, elementId, targetIndex, elementIndex)
+		callback.call(null, element, target);
 	}
 
 	realignOrder(draggableOrder.cont);
