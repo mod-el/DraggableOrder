@@ -48,6 +48,8 @@ function draggableOrderStart(event) {
 		"startY": this.offsetTop,
 		"mouseStartX": mouseCoords.x,
 		"mouseStartY": mouseCoords.y,
+		"scrollStartX": this.parentNode.scrollLeft,
+		"scrollStartY": this.parentNode.scrollTop,
 		"target": null,
 		"elements": []
 	};
@@ -80,7 +82,9 @@ function makeDraggablePlaceHolder(element) {
 	placeholder.style.width = element.offsetWidth + 'px';
 	placeholder.style.height = element.offsetHeight + 'px';
 	placeholder = element.parentNode.insertBefore(placeholder, element);
-	setTimeout(() => { placeholder.style.opacity = 1; }, 100);
+	setTimeout(() => {
+		placeholder.style.opacity = 1;
+	}, 100);
 	return placeholder;
 }
 
@@ -90,13 +94,15 @@ function draggableMove(event) {
 
 	let mouseCoords = getMouseCoords();
 
-	let diffX = mouseCoords.x - draggableOrder.mouseStartX;
-	let diffY = mouseCoords.y - draggableOrder.mouseStartY;
+	let diffX = (mouseCoords.x - draggableOrder.mouseStartX) + (draggableOrder.cont.scrollLeft - draggableOrder.scrollStartX);
+	let diffY = (mouseCoords.y - draggableOrder.mouseStartY) + (draggableOrder.cont.scrollTop - draggableOrder.scrollStartY);
 
 	draggableOrder.element.style.top = (draggableOrder.startY + diffY) + 'px';
 	draggableOrder.element.style.left = (draggableOrder.startX + diffX) + 'px';
 
-	var nearest = false, mouseCoordsInCont = getMouseCoordsInElement(event, draggableOrder.element.parentNode);
+	var nearest = false, mouseCoordsInCont = getMouseCoordsInElement(event, draggableOrder.cont);
+	mouseCoordsInCont.x += draggableOrder.cont.scrollLeft;
+	mouseCoordsInCont.y += draggableOrder.cont.scrollTop;
 	draggableOrder.elements.forEach(el => {
 		let d = Math.abs(shortestDistance(el, mouseCoordsInCont));
 		if (nearest === false || d < nearest.distance) {
