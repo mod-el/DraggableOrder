@@ -54,7 +54,17 @@ function draggableOrderStart(event) {
 		"elements": []
 	};
 
+	let elParent = 0;
+	if (this.getAttribute('data-draggable-parent'))
+		elParent = this.getAttribute('data-draggable-parent');
+
 	Array.from(this.parentNode.children).forEach(el => {
+		let parent = 0;
+		if (el.getAttribute('data-draggable-parent'))
+			parent = el.getAttribute('data-draggable-parent');
+		if (parent !== elParent)
+			return;
+
 		draggableOrder.elements.push({
 			"x1": el.offsetLeft,
 			"y1": el.offsetTop,
