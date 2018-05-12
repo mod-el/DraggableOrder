@@ -31,7 +31,7 @@ function checkDraggables() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-	observeMutations(checkDraggables);
+	onHtmlChange(checkDraggables);
 });
 
 function draggableOrderStart(event) {
