@@ -38,7 +38,7 @@ function draggableOrderStart(event) {
 	if (event.button !== 0)
 		return;
 
-	let mouseCoords = getMouseCoords();
+	let mouseCoords = getMouseCoords(event);
 
 	draggableOrder = {
 		"element": this,
@@ -102,7 +102,7 @@ function draggableMove(event) {
 	if (event.button !== 0 || !draggableOrder)
 		return;
 
-	let mouseCoords = getMouseCoords();
+	let mouseCoords = getMouseCoords(event);
 
 	let diffX = (mouseCoords.x - draggableOrder.mouseStartX) + (draggableOrder.cont.scrollLeft - draggableOrder.scrollStartX);
 	let diffY = (mouseCoords.y - draggableOrder.mouseStartY) + (draggableOrder.cont.scrollTop - draggableOrder.scrollStartY);
