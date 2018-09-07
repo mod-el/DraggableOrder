@@ -160,6 +160,8 @@ function draggableRelease(event) {
 	};
 
 	draggableOrder.element.removeClass('dragging-order');
+	draggableOrder.element.style.top = '';
+	draggableOrder.element.style.left = '';
 	placeOrderingElement(draggableOrder.element, draggableOrder['target']);
 	draggableOrder.placeholder.parentNode.removeChild(draggableOrder.placeholder);
 
