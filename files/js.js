@@ -21,7 +21,16 @@ function checkDraggables() {
 					el.setAttribute('data-draggable-index', indexes[parent]);
 				}
 
-				el.addEventListener('mousedown', draggableOrderStart);
+				if (el.querySelector('[data-draggable-grip]')) {
+					el.querySelector('[data-draggable-grip]').addEventListener('mousedown', (function (el) {
+						return function (event) {
+							draggableOrderStart(event, el);
+						};
+					})(el));
+				} else {
+					el.addEventListener('mousedown', draggableOrderStart);
+				}
+
 				el.setAttribute('data-draggable-set', '1');
 			});
 		});
@@ -34,31 +43,33 @@ window.addEventListener('DOMContentLoaded', () => {
 	onHtmlChange(checkDraggables);
 });
 
-function draggableOrderStart(event) {
+function draggableOrderStart(event, element) {
 	if (event.button !== 0)
 		return;
+	if (typeof element === 'undefined')
+		element = this;
 
 	let mouseCoords = getMouseCoords(event);
 
 	draggableOrder = {
-		"element": this,
-		"index": parseInt(this.getAttribute('data-draggable-index')),
-		"cont": this.parentNode,
-		"startX": this.offsetLeft,
-		"startY": this.offsetTop,
+		"element": element,
+		"index": parseInt(element.getAttribute('data-draggable-index')),
+		"cont": element.parentNode,
+		"startX": element.offsetLeft,
+		"startY": element.offsetTop,
 		"mouseStartX": mouseCoords.x,
 		"mouseStartY": mouseCoords.y,
-		"scrollStartX": this.parentNode.scrollLeft,
-		"scrollStartY": this.parentNode.scrollTop,
+		"scrollStartX": element.parentNode.scrollLeft,
+		"scrollStartY": element.parentNode.scrollTop,
 		"target": null,
 		"elements": []
 	};
 
 	let elParent = 0;
-	if (this.getAttribute('data-draggable-parent'))
-		elParent = this.getAttribute('data-draggable-parent');
+	if (element.getAttribute('data-draggable-parent'))
+		elParent = element.getAttribute('data-draggable-parent');
 
-	Array.from(this.parentNode.children).forEach(el => {
+	Array.from(element.parentNode.children).forEach(el => {
 		let parent = 0;
 		if (el.getAttribute('data-draggable-parent'))
 			parent = el.getAttribute('data-draggable-parent');
@@ -74,9 +85,9 @@ function draggableOrderStart(event) {
 		});
 	});
 
-	draggableOrder['placeholder'] = makeDraggablePlaceHolder(this);
+	draggableOrder['placeholder'] = makeDraggablePlaceHolder(element);
 
-	this.addClass('dragging-order');
+	element.addClass('dragging-order');
 
 	draggableMove(event);
 }
