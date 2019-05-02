@@ -209,3 +209,18 @@ function realignOrder(cont) {
 		min[parent]++;
 	});
 }
+
+function getDraggableList(name) {
+	let cont = document.querySelector('[data-draggable-cont="' + name + '"]');
+
+	let list = [];
+	Array.from(cont.children).forEach(element => {
+		if (element.getAttribute('data-draggable-name'))
+			list.push(element.getAttribute('data-draggable-name'));
+		else if (element.getAttribute('data-draggable-index'))
+			list.push(element.getAttribute('data-draggable-index'));
+		else
+			list.push(null);
+	});
+	return list;
+}
