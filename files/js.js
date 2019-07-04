@@ -6,7 +6,7 @@ function checkDraggables() {
 		let indexes = {};
 		conts.forEach(cont => {
 			Array.from(cont.children).forEach(el => {
-				if (el.getAttribute('data-draggable-set'))
+				if (el.getAttribute('data-draggable-set') || el.getAttribute('data-draggable-ignore'))
 					return;
 
 				if (!el.getAttribute('data-draggable-index')) {
@@ -70,6 +70,9 @@ function draggableOrderStart(event, element) {
 		elParent = element.getAttribute('data-draggable-parent');
 
 	Array.from(element.parentNode.children).forEach(el => {
+		if (el.getAttribute('data-draggable-ignore'))
+			return;
+
 		let parent = 0;
 		if (el.getAttribute('data-draggable-parent'))
 			parent = el.getAttribute('data-draggable-parent');
@@ -190,6 +193,9 @@ function realignOrder(cont) {
 	let min = {};
 
 	Array.from(cont.children).forEach(el => {
+		if (el.getAttribute('data-draggable-ignore'))
+			return;
+
 		let index = parseInt(el.getAttribute('data-draggable-index'));
 
 		let parent = 0;
@@ -201,6 +207,9 @@ function realignOrder(cont) {
 	});
 
 	Array.from(cont.children).forEach(el => {
+		if (el.getAttribute('data-draggable-ignore'))
+			return;
+
 		let parent = 0;
 		if (el.getAttribute('data-draggable-parent'))
 			parent = el.getAttribute('data-draggable-parent');
