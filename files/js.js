@@ -176,12 +176,12 @@ function draggableRelease(event) {
 	placeOrderingElement(draggableOrder.element, draggableOrder['target']);
 	draggableOrder.placeholder.parentNode.removeChild(draggableOrder.placeholder);
 
+	realignOrder(draggableOrder.cont);
+
 	if (draggableOrder.cont.getAttribute('data-draggable-callback')) {
 		eval('var callback = function(id, targetIdx, elementIdx){ ' + draggableOrder.cont.getAttribute('data-draggable-callback') + ' }');
 		callback.call(null, element, target);
 	}
-
-	realignOrder(draggableOrder.cont);
 
 	draggableOrder = false;
 }
