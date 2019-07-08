@@ -62,6 +62,7 @@ function draggableOrderStart(event, element) {
 		"scrollStartX": element.parentNode.scrollLeft,
 		"scrollStartY": element.parentNode.scrollTop,
 		"target": null,
+		"moved": false,
 		"elements": []
 	};
 
@@ -140,6 +141,8 @@ function draggableMove(event) {
 	if (nearest) {
 		draggableOrder['target'] = nearest.element;
 		placeOrderingElement(draggableOrder.placeholder, draggableOrder['target']);
+		if (draggableOrder['target'] !== draggableOrder['element'])
+			draggableOrder['moved'] = true;
 	}
 }
 
@@ -185,6 +188,9 @@ function draggableRelease(event) {
 		eval('var callback = function(id, targetIdx, elementIdx){ ' + draggableOrder.cont.getAttribute('data-draggable-callback') + ' }');
 		callback.call(null, element, target);
 	}
+
+	if (draggableOrder.element === draggableOrder.target && !draggableOrder['moved'])
+		draggableOrder.element.click();
 
 	draggableOrder = false;
 }
