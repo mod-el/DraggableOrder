@@ -184,13 +184,12 @@ function draggableRelease(event) {
 
 	realignOrder(draggableOrder.cont);
 
-	if (draggableOrder.cont.getAttribute('data-draggable-callback')) {
+	if (draggableOrder.element === draggableOrder.target && !draggableOrder['moved']) {
+		draggableOrder.element.click();
+	} else if (draggableOrder.cont.getAttribute('data-draggable-callback')) {
 		eval('var callback = function(id, targetIdx, elementIdx){ ' + draggableOrder.cont.getAttribute('data-draggable-callback') + ' }');
 		callback.call(null, element, target);
 	}
-
-	if (draggableOrder.element === draggableOrder.target && !draggableOrder['moved'])
-		draggableOrder.element.click();
 
 	draggableOrder = false;
 }
