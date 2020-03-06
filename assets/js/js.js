@@ -53,6 +53,7 @@ function draggableOrderStart(event, element) {
 
 	draggableOrder = {
 		"element": element,
+		"eventTarget": event.target,
 		"index": parseInt(element.getAttribute('data-draggable-index')),
 		"cont": element.parentNode,
 		"startX": element.offsetLeft,
@@ -185,7 +186,7 @@ function draggableRelease(event) {
 	realignOrder(draggableOrder.cont);
 
 	if (draggableOrder.element === draggableOrder.target && !draggableOrder['moved']) {
-		draggableOrder.element.click();
+		draggableOrder.eventTarget.click();
 	} else if (draggableOrder.cont.getAttribute('data-draggable-callback')) {
 		eval('var callback = function(id, targetIdx, elementIdx){ ' + draggableOrder.cont.getAttribute('data-draggable-callback') + ' }');
 		callback.call(null, element, target);
