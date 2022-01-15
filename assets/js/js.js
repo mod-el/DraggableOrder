@@ -50,6 +50,7 @@ function draggableOrderStart(event, element) {
 		element = this;
 
 	let mouseCoords = getMouseCoords(event);
+	let contCoords = getElementCoords(element.parentNode);
 
 	draggableOrder = {
 		"element": element,
@@ -62,6 +63,7 @@ function draggableOrderStart(event, element) {
 		"mouseStartY": mouseCoords.y,
 		"scrollStartX": element.parentNode.scrollLeft,
 		"scrollStartY": element.parentNode.scrollTop,
+		"contCoords": contCoords,
 		"target": null,
 		"moved": false,
 		"elements": []
@@ -89,6 +91,11 @@ function draggableOrderStart(event, element) {
 			"element": el
 		});
 	});
+
+	if (element.style.width)
+		element.setAttribute('data-dragging-orig-width', element.style.width);
+
+	element.style.width = element.offsetWidth + 'px';
 
 	draggableOrder['placeholder'] = makeDraggablePlaceHolder(element);
 
@@ -118,15 +125,22 @@ function draggableMove(event) {
 	if (event.button !== 0 || !draggableOrder)
 		return;
 
-	let mouseCoords = getMouseCoords(event);
+	// Rimuovo selezione testo
+	if (document.selection)
+		document.selection.empty()
+	else
+		window.getSelection().removeAllRanges()
 
-	let diffX = (mouseCoords.x - draggableOrder.mouseStartX) + (draggableOrder.cont.scrollLeft - draggableOrder.scrollStartX);
-	let diffY = (mouseCoords.y - draggableOrder.mouseStartY) + (draggableOrder.cont.scrollTop - draggableOrder.scrollStartY);
+	let mouseCoords = getMouseCoords(event);
+	let contCoords = getElementCoords(draggableOrder.cont);
+
+	let diffX = (mouseCoords.x - draggableOrder.mouseStartX) + (draggableOrder.cont.scrollLeft - draggableOrder.scrollStartX) + (draggableOrder.contCoords.x - contCoords.x);
+	let diffY = (mouseCoords.y - draggableOrder.mouseStartY) + (draggableOrder.cont.scrollTop - draggableOrder.scrollStartY) + (draggableOrder.contCoords.y - contCoords.y);
 
 	draggableOrder.element.style.top = (draggableOrder.startY + diffY) + 'px';
 	draggableOrder.element.style.left = (draggableOrder.startX + diffX) + 'px';
 
-	var nearest = false, mouseCoordsInCont = getMouseCoordsInElement(event, draggableOrder.cont);
+	let nearest = false, mouseCoordsInCont = getMouseCoordsInElement(event, draggableOrder.cont);
 	mouseCoordsInCont.x += draggableOrder.cont.scrollLeft;
 	mouseCoordsInCont.y += draggableOrder.cont.scrollTop;
 	draggableOrder.elements.forEach(el => {
@@ -177,9 +191,14 @@ function draggableRelease(event) {
 		'idx': parseInt(draggableOrder['target'].getAttribute('data-draggable-index'))
 	};
 
+	if (draggableOrder.element.getAttribute('data-dragging-orig-width'))
+		draggableOrder.element.style.width = draggableOrder.element.getAttribute('data-dragging-orig-width');
+	else
+		draggableOrder.element.style.removeProperty('width');
+
 	draggableOrder.element.removeClass('dragging-order');
-	draggableOrder.element.style.top = '';
-	draggableOrder.element.style.left = '';
+	draggableOrder.element.style.removeProperty('top');
+	draggableOrder.element.style.removeProperty('left');
 	placeOrderingElement(draggableOrder.element, draggableOrder['target']);
 	draggableOrder.placeholder.parentNode.removeChild(draggableOrder.placeholder);
 
