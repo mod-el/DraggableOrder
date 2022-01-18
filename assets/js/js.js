@@ -207,8 +207,8 @@ function draggableRelease(event) {
 	if (draggableOrder.element === draggableOrder.target && !draggableOrder['moved']) {
 		draggableOrder.eventTarget.click();
 	} else if (draggableOrder.cont.getAttribute('data-draggable-callback')) {
-		eval('var callback = function(id, targetIdx, elementIdx){ ' + draggableOrder.cont.getAttribute('data-draggable-callback') + ' }');
-		callback.call(null, element, target);
+		eval('var callback = function(element, target){ ' + draggableOrder.cont.getAttribute('data-draggable-callback') + ' }');
+		callback.call(draggableOrder.element, element, target);
 	}
 
 	draggableOrder = false;
