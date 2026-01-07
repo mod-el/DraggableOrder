@@ -1,42 +1,38 @@
 var draggableOrder = false;
 
-function checkDraggables() {
-	return new Promise(function (resolve) {
-		let conts = document.querySelectorAll('[data-draggable-cont]');
-		let indexes = {};
-		conts.forEach(cont => {
-			Array.from(cont.children).forEach(el => {
-				if (el.getAttribute('data-draggable-set') || el.getAttribute('data-draggable-ignore'))
-					return;
+async function checkDraggables() {
+	let conts = document.querySelectorAll('[data-draggable-cont]');
+	let indexes = {};
+	for (const cont of conts) {
+		for (const el of Array.from(cont.children)) {
+			if (el.getAttribute('data-draggable-set') || el.getAttribute('data-draggable-ignore'))
+				continue;
 
-				if (!el.getAttribute('data-draggable-index')) {
-					let parent = 0;
-					if (el.getAttribute('data-draggable-parent'))
-						parent = el.getAttribute('data-draggable-parent');
+			if (!el.getAttribute('data-draggable-index')) {
+				let parent = 0;
+				if (el.getAttribute('data-draggable-parent'))
+					parent = el.getAttribute('data-draggable-parent');
 
-					if (typeof indexes[parent] === 'undefined')
-						indexes[parent] = 0;
-					indexes[parent]++;
+				if (typeof indexes[parent] === 'undefined')
+					indexes[parent] = 0;
+				indexes[parent]++;
 
-					el.setAttribute('data-draggable-index', indexes[parent]);
-				}
+				el.setAttribute('data-draggable-index', indexes[parent]);
+			}
 
-				if (el.querySelector('[data-draggable-grip]')) {
-					el.querySelector('[data-draggable-grip]').addEventListener('mousedown', (function (el) {
-						return function (event) {
-							draggableOrderStart(event, el);
-						};
-					})(el));
-				} else {
-					el.addEventListener('mousedown', draggableOrderStart);
-				}
+			if (el.querySelector('[data-draggable-grip]')) {
+				el.querySelector('[data-draggable-grip]').addEventListener('mousedown', (function (el) {
+					return function (event) {
+						draggableOrderStart(event, el);
+					};
+				})(el));
+			} else {
+				el.addEventListener('mousedown', draggableOrderStart);
+			}
 
-				el.setAttribute('data-draggable-set', '1');
-			});
-		});
-
-		resolve();
-	});
+			el.setAttribute('data-draggable-set', '1');
+		}
+	}
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -53,20 +49,20 @@ function draggableOrderStart(event, element) {
 	let contCoords = getElementCoords(element.parentNode);
 
 	draggableOrder = {
-		"element": element,
-		"eventTarget": event.target,
-		"index": parseInt(element.getAttribute('data-draggable-index')),
-		"cont": element.parentNode,
-		"startX": element.offsetLeft,
-		"startY": element.offsetTop,
-		"mouseStartX": mouseCoords.x,
-		"mouseStartY": mouseCoords.y,
-		"scrollStartX": element.parentNode.scrollLeft,
-		"scrollStartY": element.parentNode.scrollTop,
-		"contCoords": contCoords,
-		"target": null,
-		"moved": false,
-		"elements": []
+		element: element,
+		eventTarget: event.target,
+		index: parseInt(element.getAttribute('data-draggable-index')),
+		cont: element.parentNode,
+		startX: element.offsetLeft,
+		startY: element.offsetTop,
+		mouseStartX: mouseCoords.x,
+		mouseStartY: mouseCoords.y,
+		scrollStartX: element.parentNode.scrollLeft,
+		scrollStartY: element.parentNode.scrollTop,
+		contCoords: contCoords,
+		target: null,
+		moved: false,
+		elements: [],
 	};
 
 	let elParent = 0;
@@ -84,11 +80,11 @@ function draggableOrderStart(event, element) {
 			return;
 
 		draggableOrder.elements.push({
-			"x1": el.offsetLeft,
-			"y1": el.offsetTop,
-			"x2": el.offsetLeft + el.offsetWidth - 1,
-			"y2": el.offsetTop + el.offsetHeight - 1,
-			"element": el
+			x1: el.offsetLeft,
+			y1: el.offsetTop,
+			x2: el.offsetLeft + el.offsetWidth - 1,
+			y2: el.offsetTop + el.offsetHeight - 1,
+			element: el,
 		});
 	});
 
@@ -162,8 +158,8 @@ function draggableMove(event) {
 }
 
 function shortestDistance(element, point) {
-	let dx = Math.max(element.x1 - point.x, 0, point.x - element.x2);
-	let dy = Math.max(element.y1 - point.y, 0, point.y - element.y2);
+	const dx = Math.max(element.x1 - point.x, 0, point.x - element.x2),
+		dy = Math.max(element.y1 - point.y, 0, point.y - element.y2);
 	return Math.sqrt(dx * dx + dy * dy);
 }
 
@@ -183,12 +179,12 @@ function draggableRelease(event) {
 		return;
 
 	let element = {
-		'id': draggableOrder.element.getAttribute('data-draggable-id'),
-		'idx': draggableOrder.index
+		id: draggableOrder.element.getAttribute('data-draggable-id'),
+		idx: draggableOrder.index,
 	};
 	let target = {
-		'id': draggableOrder['target'].getAttribute('data-draggable-id'),
-		'idx': parseInt(draggableOrder['target'].getAttribute('data-draggable-index'))
+		id: draggableOrder['target'].getAttribute('data-draggable-id'),
+		idx: parseInt(draggableOrder['target'].getAttribute('data-draggable-index')),
 	};
 
 	if (draggableOrder.element.getAttribute('data-dragging-orig-width'))
@@ -217,9 +213,9 @@ function draggableRelease(event) {
 function realignOrder(cont) {
 	let min = {};
 
-	Array.from(cont.children).forEach(el => {
+	for (const el of Array.from(cont.children)) {
 		if (el.getAttribute('data-draggable-ignore'))
-			return;
+			continue;
 
 		let index = parseInt(el.getAttribute('data-draggable-index'));
 
@@ -229,11 +225,11 @@ function realignOrder(cont) {
 
 		if (typeof min[parent] === 'undefined' || min[parent] > index)
 			min[parent] = index;
-	});
+	}
 
-	Array.from(cont.children).forEach(el => {
+	for (const el of Array.from(cont.children)) {
 		if (el.getAttribute('data-draggable-ignore'))
-			return;
+			continue;
 
 		let parent = 0;
 		if (el.getAttribute('data-draggable-parent'))
@@ -241,7 +237,7 @@ function realignOrder(cont) {
 
 		el.setAttribute('data-draggable-index', min[parent]);
 		min[parent]++;
-	});
+	}
 }
 
 function getDraggableList(name) {
